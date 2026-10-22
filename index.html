@@ -688,6 +688,10 @@
         <nav class="tabs" role="tablist" aria-label="商品切换">
           <button class="tab active" role="tab" aria-selected="true" data-product="account">Muse 成品账号</button>
           <button class="tab" role="tab" aria-selected="false" data-product="bundle">成品号 + 300亿Token</button>
+          <button class="tab" role="tab" aria-selected="false" data-product="token300">Muse 300亿Token</button>
+          <button class="tab" role="tab" aria-selected="false" data-product="token200">Muse 200亿Token</button>
+          <button class="tab" role="tab" aria-selected="false" data-product="token150">Muse 150亿Token</button>
+          <button class="tab" role="tab" aria-selected="false" data-product="token100">Muse 100亿Token</button>
         </nav>
 
         <button class="orders-btn" id="ordersBtn" type="button">
@@ -721,7 +725,7 @@
                 </div>
               </div>
               <div class="token-meter" id="tokenMeter">
-                <div class="tm-head"><span>附带 Token 额度</span><b>300 亿 Token</b></div>
+                <div class="tm-head"><span>附带 Token 额度</span><b id="tokenAmount">300 亿 Token</b></div>
                 <div class="tm-bar"><div class="tm-fill"></div></div>
               </div>
             </div>
@@ -953,6 +957,7 @@
           cardType: "成品账号 + Token 额度包",
           visualNote: "账号与 300 亿 Token 一并发到你的收件邮箱，适合高频、长时间使用 Muse 的场景。",
           showToken: true,
+          tokenAmount: "300 亿 Token",
           features: [
             "包含一只 Muse 成品账号",
             "附带 300 亿 Token 额度",
@@ -962,6 +967,82 @@
             "适合重度使用与批量任务"
           ],
           warranty: "账号首次登录不上可免费换号；Token 额度随账号一并发放，发放后可在账号内查看剩余额度。"
+        },
+        token300: {
+          name: "Muse 300亿Token",
+          desc: "300 亿 Token 额度包，不含账号。已有 Muse 账号、用量大的直接续这一档，长文本和批量任务随便跑。",
+          price: 79,
+          tag: "大容量 · 纯额度包",
+          cardType: "Token 额度包 · 不含账号",
+          visualNote: "300 亿 Token 额度发送到你的收件邮箱，按说明充值到自己的 Muse 账号即可使用。",
+          showToken: true,
+          tokenAmount: "300 亿 Token",
+          features: [
+            "300 亿 Token 额度",
+            "不含账号，需自备 Muse 账号",
+            "付款后发送到邮箱",
+            "长文本、批量任务都够用",
+            "额度发放后可查剩余",
+            "适合重度使用"
+          ],
+          warranty: "Token 额度发放后可在账号内查看剩余额度；额度无法到账请联系支持处理。"
+        },
+        token200: {
+          name: "Muse 200亿Token",
+          desc: "200 亿 Token 额度包，不含账号。用量不小的日常主力档，天天用也顶得住一阵子。",
+          price: 52,
+          tag: "热销 · 纯额度包",
+          cardType: "Token 额度包 · 不含账号",
+          visualNote: "200 亿 Token 额度发送到你的收件邮箱，按说明充值到自己的 Muse 账号即可使用。",
+          showToken: true,
+          tokenAmount: "200 亿 Token",
+          features: [
+            "200 亿 Token 额度",
+            "不含账号，需自备 Muse 账号",
+            "付款后发送到邮箱",
+            "日常高频使用够用",
+            "额度发放后可查剩余",
+            "性价比主力档"
+          ],
+          warranty: "Token 额度发放后可在账号内查看剩余额度；额度无法到账请联系支持处理。"
+        },
+        token150: {
+          name: "Muse 150亿Token",
+          desc: "150 亿 Token 额度包，不含账号。中等用量刚刚好，先续一档用着，不够再加。",
+          price: 45,
+          tag: "均衡之选 · 纯额度包",
+          cardType: "Token 额度包 · 不含账号",
+          visualNote: "150 亿 Token 额度发送到你的收件邮箱，按说明充值到自己的 Muse 账号即可使用。",
+          showToken: true,
+          tokenAmount: "150 亿 Token",
+          features: [
+            "150 亿 Token 额度",
+            "不含账号，需自备 Muse 账号",
+            "付款后发送到邮箱",
+            "中等用量刚刚好",
+            "额度发放后可查剩余",
+            "不够用随时再续"
+          ],
+          warranty: "Token 额度发放后可在账号内查看剩余额度；额度无法到账请联系支持处理。"
+        },
+        token100: {
+          name: "Muse 100亿Token",
+          desc: "100 亿 Token 额度包，不含账号。入门续量档，先买一档试试手感，用完再升级。",
+          price: 30,
+          tag: "入门续量 · 纯额度包",
+          cardType: "Token 额度包 · 不含账号",
+          visualNote: "100 亿 Token 额度发送到你的收件邮箱，按说明充值到自己的 Muse 账号即可使用。",
+          showToken: true,
+          tokenAmount: "100 亿 Token",
+          features: [
+            "100 亿 Token 额度",
+            "不含账号，需自备 Muse 账号",
+            "付款后发送到邮箱",
+            "入门试用不心疼",
+            "额度发放后可查剩余",
+            "用完可升级大档"
+          ],
+          warranty: "Token 额度发放后可在账号内查看剩余额度；额度无法到账请联系支持处理。"
         }
       };
 
@@ -982,12 +1063,14 @@
         $("productName").textContent = p.name;
         $("productDesc").textContent = p.desc;
         $("priceNow").textContent = p.price;
-        $("priceOld").textContent = money(p.oldPrice);
+        $("priceOld").textContent = p.oldPrice ? money(p.oldPrice) : "";
+        $("priceOld").style.display = p.oldPrice ? "" : "none";
         $("visualTag").textContent = p.tag;
         $("cardType").textContent = p.cardType;
         $("visualNote").textContent = p.visualNote;
         $("warrantyText").textContent = p.warranty;
         $("tokenMeter").classList.toggle("show", p.showToken);
+        if (p.tokenAmount) $("tokenAmount").textContent = p.tokenAmount;
         var list = $("featureList");
         list.innerHTML = "";
         p.features.forEach(function (f) {
