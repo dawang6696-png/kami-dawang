@@ -1194,6 +1194,16 @@
     <div class="toast" id="toast" role="status"></div>
 
     <script>
+      /* 访客访问上报（流量统计用），失败静默，绝不影响页面使用 */
+      try {
+        fetch("https://silent-boat-8406.dawang6696.workers.dev/visit", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ page: location.pathname, ts: Date.now() }),
+          keepalive: true
+        }).catch(function () {});
+      } catch (e) { /* 上报失败不影响页面 */ }
+
       var PRODUCTS = {
         account: {
           name: "Muse 成品账号",
