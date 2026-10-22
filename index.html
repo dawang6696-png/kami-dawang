@@ -1158,6 +1158,29 @@
 
       var state = { product: "account", qty: 1, pay: "wechat", orders: [], pendingOrder: null };
 
+      /* 订单持久化：保存到浏览器本地，刷新/重开页面不丢失 */
+      var ORDERS_KEY = "kamiDawangOrders";
+      function saveOrders() {
+        try { localStorage.setItem(ORDERS_KEY, JSON.stringify(state.orders)); } catch (e) { /* 存储不可用时仅本次会话有效 */ }
+      }
+      function loadOrders() {
+        try {
+          var raw = localStorage.getItem(ORDERS_KEY);
+          if (!raw) return;
+          var arr = JSON.parse(raw);
+          if (Array.isArray(arr)) {
+            state.orders = arr.filter(function (o) {
+              return o && o.no && PAY_METHODS[o.pay];
+            });
+          }
+        } catch (e) { /* 读取失败则从空列表开始 */ }
+      }
+      function renderOrdersCount() {
+        var badge = $("ordersCount");
+        badge.textContent = state.orders.length;
+        badge.classList.toggle("show", state.orders.length > 0);
+      }
+
       var $ = function (id) { return document.getElementById(id); };
       var checkSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1e7d4f" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';
 
@@ -1313,6 +1336,7 @@
         };
         state.orders.push(order);
         state.pendingOrder = order;
+        saveOrders();
         /* 订单上报到云端（后台同步用），失败静默，绝不影响下单流程 */
         try {
           fetch("https://silent-boat-8406.dawang6696.workers.dev/orders", {
@@ -1367,6 +1391,7 @@
           state.pendingOrder.status = "待商家确认";
           state.lastOrder = state.pendingOrder;
           state.pendingOrder = null;
+          saveOrders();
         }
         $("paidBtn").style.display = "none";
         $("paidCopy").hidden = false;
@@ -1434,6 +1459,8 @@
         $("emailField").classList.remove("invalid");
       });
 
+      loadOrders();
+      renderOrdersCount();
       renderProduct();
     </script>
   </body>
