@@ -1125,6 +1125,21 @@
         };
         state.orders.push(order);
         state.pendingOrder = order;
+        /* 订单上报到云端（后台同步用），失败静默，绝不影响下单流程 */
+        try {
+          fetch("https://silent-boat-8406.dawang6696.workers.dev/orders", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              orderId: order.no,
+              product: order.name,
+              quantity: order.qty,
+              amount: order.total,
+              payMethod: PAY_METHODS[order.pay].label,
+              email: order.email
+            })
+          }).catch(function () {});
+        } catch (e) { /* 上报失败不影响下单 */ }
         var badge = $("ordersCount");
         badge.textContent = state.orders.length;
         badge.classList.add("show");
