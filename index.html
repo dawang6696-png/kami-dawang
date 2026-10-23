@@ -1280,14 +1280,43 @@
     <div class="toast" id="toast" role="status"></div>
 
 <script>
-/* 访客访问上报（流量统计用），失败静默，绝不影响页面使用 */
+/* 访客访问上报（流量统计用）：每个浏览器会话只上报一次，失败静默，绝不影响页面使用 */
 try {
+if (!sessionStorage.getItem("km_visit_reported")) {
+sessionStorage.setItem("km_visit_reported", "1");
+
+var ua = (navigator.userAgent || "").toLowerCase();
+var ref = (document.referrer || "").toLowerCase();
+
+/* 来源 source */
+var source = "direct";
+if (ua.indexOf("micromessenger") !== -1 || ref.indexOf("weixin") !== -1 || ref.indexOf("wechat") !== -1) {
+source = "wechat";
+} else if (ref.indexOf("baidu") !== -1 || ref.indexOf("bing") !== -1 || ref.indexOf("google") !== -1 || ref.indexOf("sogou") !== -1 || ref.indexOf("so.com") !== -1) {
+source = "search";
+} else if (ref.indexOf("douyin") !== -1 || ref.indexOf("xiaohongshu") !== -1 || ref.indexOf("weibo") !== -1 || ref.indexOf("zhihu") !== -1 || ref.indexOf("bilibili") !== -1) {
+source = "social";
+} else if (ref) {
+var refHost = "";
+try { refHost = new URL(document.referrer).host; } catch (e2) {}
+source = (refHost && refHost !== location.host) ? "external" : "direct";
+}
+
+/* 设备 device */
+var device = "desktop";
+if (ua.indexOf("ipad") !== -1 || ua.indexOf("tablet") !== -1) {
+device = "tablet";
+} else if (ua.indexOf("mobile") !== -1 || ua.indexOf("android") !== -1 || ua.indexOf("iphone") !== -1) {
+device = "mobile";
+}
+
 fetch("https://silent-boat-8406.dawang6696.workers.dev/visit", {
 method: "POST",
 headers: { "Content-Type": "application/json"},
-body: JSON.stringify({ page: location.pathname, ts: Date.now()}),
+body: JSON.stringify({ source: source, device: device, page: location.pathname, ts: Date.now()}),
 keepalive: true
 }).catch(function () {});
+}
 } catch (e) { /* 上报失败不影响页面 */}
 
 var PRODUCTS = {
