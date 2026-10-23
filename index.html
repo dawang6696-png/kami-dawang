@@ -9,7 +9,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Archivo:wght@600;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700;900&family=Archivo:wght@600;800&family=Manrope:wght@600;700;800&display=swap"
       rel="stylesheet"
     />
     <style>
@@ -26,7 +26,18 @@
         --blue-deep: #2b59c9;
         --blue-soft: #eaf0fe;
         --danger: #d92d20;
-        --shadow: 0 12px 32px rgba(22, 24, 29, 0.06);
+        --shadow:
+          0 1px 2px rgba(22, 24, 29, 0.04),
+          0 4px 12px rgba(22, 24, 29, 0.04),
+          0 16px 40px rgba(22, 24, 29, 0.06),
+          0 32px 64px rgba(22, 24, 29, 0.04);
+        --shadow-hover:
+          0 2px 4px rgba(22, 24, 29, 0.05),
+          0 8px 20px rgba(22, 24, 29, 0.05),
+          0 24px 56px rgba(22, 24, 29, 0.08),
+          0 40px 80px rgba(22, 24, 29, 0.05);
+        --font-num: "Manrope", "Archivo", "Noto Sans SC", sans-serif;
+        --ease-spring: cubic-bezier(0.34, 1.45, 0.4, 1);
         --radius: 28px;
       }
       * { box-sizing: border-box; }
@@ -54,6 +65,15 @@
         backdrop-filter: blur(12px);
         -webkit-backdrop-filter: blur(12px);
         border-bottom: 1px solid var(--line);
+        box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9), 0 10px 28px rgba(22, 24, 29, 0.045);
+      }
+      .topbar::after {
+        content: "";
+        position: absolute;
+        left: 0; right: 0; bottom: -4px;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, rgba(22, 24, 29, 0.05) 18%, rgba(22, 24, 29, 0.05) 82%, transparent);
+        pointer-events: none;
       }
       .topbar-in {
         max-width: 1120px;
@@ -88,20 +108,20 @@
       .brand-name {
         font-size: 19px;
         font-weight: 900;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.06em;
         line-height: 1.15;
         white-space: nowrap;
       }
       .brand-sub {
         font-size: 10px;
         color: var(--ink-3);
-        letter-spacing: 0.28em;
+        letter-spacing: 0.34em;
         font-family: "Archivo", sans-serif;
       }
       .orders-btn {
         justify-self: end;
         border: 1px solid var(--line);
-        background: var(--surface);
+        background: linear-gradient(180deg, #ffffff, #fbfcfe);
         color: var(--ink);
         font-size: 14px;
         font-weight: 700;
@@ -110,14 +130,21 @@
         display: inline-flex;
         align-items: center;
         gap: 7px;
-        transition: border-color 0.15s, box-shadow 0.15s;
+        box-shadow: 0 1px 2px rgba(22, 24, 29, 0.04);
+        transition: border-color 0.2s, box-shadow 0.25s, transform 0.2s;
       }
-      .orders-btn:hover { border-color: var(--blue); box-shadow: 0 4px 14px rgba(56, 109, 232, 0.12); }
+      .orders-btn:hover {
+        border-color: rgba(56, 109, 232, 0.55);
+        box-shadow: 0 6px 18px rgba(56, 109, 232, 0.14);
+        transform: translateY(-1px);
+      }
+      .orders-btn:active { transform: translateY(0); box-shadow: 0 2px 8px rgba(56, 109, 232, 0.12); }
       .orders-count {
-        background: var(--blue);
+        background: linear-gradient(180deg, #4a7bf0, var(--blue-deep));
         color: #fff;
         font-size: 11px;
-        font-weight: 700;
+        font-weight: 800;
+        font-family: var(--font-num);
         min-width: 18px; height: 18px;
         border-radius: 999px;
         display: none;
@@ -130,15 +157,25 @@
       .wrap {
         max-width: 1120px;
         margin: 0 auto;
-        padding: 26px 20px 56px;
+        padding: 34px 24px 72px;
       }
       .layout {
         display: grid;
         grid-template-columns: minmax(0, 1.55fr) minmax(320px, 1fr);
-        gap: 24px;
+        gap: 28px;
         align-items: start;
-        margin-top: 22px;
+        margin-top: 28px;
       }
+
+      /* ---------- 页面加载：区块依次淡入 ---------- */
+      @keyframes fade-up {
+        from { opacity: 0; transform: translateY(14px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .segmented { animation: fade-up 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) 0.02s both; }
+      .showcase { animation: fade-up 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) 0.1s both; }
+      .order-card { animation: fade-up 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) 0.18s both; }
+      .tutorial { animation: fade-up 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) 0.26s both; }
 
       /* ---------- 商品分段切换器（iOS 风格） ---------- */
       .segmented {
@@ -146,17 +183,23 @@
         display: grid;
         grid-template-columns: repeat(6, 1fr);
         gap: 2px;
-        background: #eceef3;
+        background: linear-gradient(180deg, #e0e4ec, #d6dbe5);
+        border: 1px solid rgba(22, 24, 29, 0.09);
         border-radius: 999px;
         padding: 5px;
+        box-shadow: inset 0 1px 4px rgba(22, 24, 29, 0.10), 0 1px 2px rgba(255, 255, 255, 0.8);
       }
       .seg-thumb {
         position: absolute;
         top: 0; left: 0;
-        background: #fff;
+        background: linear-gradient(180deg, #ffffff, #fdfdfe);
+        border: 1px solid rgba(22, 24, 29, 0.04);
         border-radius: 999px;
-        box-shadow: 0 3px 10px rgba(22, 24, 29, 0.14), 0 1px 3px rgba(22, 24, 29, 0.08);
-        transition: transform 0.32s cubic-bezier(0.32, 0.72, 0.24, 1), width 0.32s cubic-bezier(0.32, 0.72, 0.24, 1), height 0.32s cubic-bezier(0.32, 0.72, 0.24, 1);
+        box-shadow:
+          0 1px 2px rgba(22, 24, 29, 0.06),
+          0 4px 12px rgba(22, 24, 29, 0.10),
+          0 10px 24px rgba(22, 24, 29, 0.06);
+        transition: transform 0.45s var(--ease-spring), width 0.45s var(--ease-spring), height 0.45s var(--ease-spring);
         z-index: 0;
       }
       .tab {
@@ -164,7 +207,7 @@
         z-index: 1;
         border: 0;
         background: transparent;
-        color: var(--ink-2);
+        color: #2e3540;
         padding: 8px 4px 9px;
         border-radius: 999px;
         line-height: 1.3;
@@ -182,16 +225,18 @@
         white-space: nowrap;
       }
       .tab .t-sub {
-        font-size: 12px;
-        font-weight: 700;
-        font-family: "Archivo", sans-serif;
-        color: var(--ink-3);
+        font-size: 12.5px;
+        font-weight: 900;
+        font-family: var(--font-num);
+        letter-spacing: 0.02em;
+        color: #4d5766;
         white-space: nowrap;
         transition: color 0.2s;
       }
       .tab:hover { color: var(--ink); }
       .tab.active { color: var(--ink); }
-      .tab.active .t-sub { color: var(--blue); }
+      .tab.active .t-main { font-weight: 800; }
+      .tab.active .t-sub { color: var(--blue); font-weight: 900; }
 
       /* ---------- 产品展示 ---------- */
       .showcase {
@@ -200,10 +245,12 @@
         border-radius: var(--radius);
         box-shadow: var(--shadow);
         overflow: hidden;
+        transition: box-shadow 0.35s ease;
       }
+      .showcase:hover { box-shadow: var(--shadow-hover); }
       .visual {
         position: relative;
-        padding: 26px 30px 28px;
+        padding: 30px 34px 32px;
         background:
           radial-gradient(520px 240px at 50% -60px, rgba(56, 109, 232, 0.10), transparent 68%),
           #fbfcfe;
@@ -237,6 +284,11 @@
         border-radius: 50%;
         background: radial-gradient(circle, rgba(56, 109, 232, 0.30), rgba(56, 109, 232, 0.08) 55%, transparent 70%);
         pointer-events: none;
+        animation: breathe 4.6s ease-in-out infinite;
+      }
+      @keyframes breathe {
+        0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.85; }
+        50% { transform: translate(-50%, -50%) scale(1.14); opacity: 1; }
       }
       .hero-logo {
         position: relative;
@@ -251,7 +303,12 @@
         line-height: 1;
         display: grid;
         place-items: center;
-        box-shadow: 0 24px 48px rgba(56, 109, 232, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.35);
+        box-shadow:
+          0 2px 6px rgba(56, 109, 232, 0.22),
+          0 12px 24px rgba(56, 109, 232, 0.26),
+          0 28px 56px rgba(56, 109, 232, 0.30),
+          inset 0 1px 0 rgba(255, 255, 255, 0.35),
+          inset 0 -8px 18px rgba(27, 62, 143, 0.22);
         animation: floaty 5s ease-in-out infinite;
       }
       @keyframes floaty {
@@ -259,8 +316,9 @@
         50% { transform: translateY(-8px); }
       }
       @media (prefers-reduced-motion: reduce) {
-        .hero-logo { animation: none; }
+        .hero-logo, .hero-glow { animation: none; }
         .seg-thumb { transition: none; }
+        .segmented, .showcase, .order-card, .tutorial { animation: none; }
       }
       /* 分页小圆点 */
       .dots {
@@ -286,7 +344,10 @@
         border: 1px solid var(--line);
         border-radius: 20px;
         padding: 22px 24px 20px;
-        box-shadow: 0 16px 34px rgba(22, 24, 29, 0.08);
+        box-shadow:
+          0 1px 2px rgba(22, 24, 29, 0.05),
+          0 6px 16px rgba(22, 24, 29, 0.06),
+          0 18px 40px rgba(22, 24, 29, 0.09);
         transform: rotate(-1.2deg);
       }
       .account-card .ac-top {
@@ -344,32 +405,36 @@
         font-size: 13px;
         color: var(--ink-2);
       }
-      .product-body { padding: 26px 30px 30px; }
+      .product-body { padding: 32px 34px 36px; }
       .product-name {
-        font-size: 26px;
+        font-size: 28px;
         font-weight: 900;
-        margin: 0 0 6px;
-        line-height: 1.3;
+        letter-spacing: 0.015em;
+        margin: 0 0 8px;
+        line-height: 1.32;
       }
-      .product-desc { color: var(--ink-2); font-size: 15px; margin: 0 0 20px; }
+      .product-desc { color: var(--ink-2); font-size: 15px; line-height: 1.75; margin: 0 0 24px; }
       .price-row {
-        display: flex; align-items: baseline; gap: 12px;
-        padding: 16px 0;
+        display: flex; align-items: baseline; gap: 14px;
+        padding: 20px 0;
         border-top: 1px dashed var(--line);
         border-bottom: 1px dashed var(--line);
-        margin-bottom: 22px;
+        margin-bottom: 26px;
       }
       .price-now {
-        font-family: "Archivo", sans-serif;
-        font-size: 38px;
+        font-family: var(--font-num);
+        font-size: 42px;
         font-weight: 800;
+        letter-spacing: -0.01em;
         color: var(--blue);
         line-height: 1;
       }
-      .price-now small { font-size: 20px; font-weight: 800; }
+      .price-now small { font-size: 21px; font-weight: 800; margin-right: 2px; }
       .price-old {
         color: var(--ink-3);
         text-decoration: line-through;
+        font-family: var(--font-num);
+        font-weight: 600;
         font-size: 16px;
       }
       .price-note { font-size: 12px; color: var(--ink-3); margin-left: auto; text-align: right; }
@@ -389,7 +454,7 @@
       .features li svg { flex: none; margin-top: 3px; }
       .detail-block { margin-top: 26px; }
       .detail-block h3 {
-        font-size: 15px; font-weight: 900; margin: 0 0 8px;
+        font-size: 15px; font-weight: 900; letter-spacing: 0.04em; margin: 0 0 10px;
         display: flex; align-items: center; gap: 8px;
       }
       .detail-block h3::after {
@@ -406,15 +471,17 @@
         border: 1px solid var(--line);
         border-radius: var(--radius);
         box-shadow: var(--shadow);
-        padding: 26px 26px 28px;
+        padding: 30px 28px 32px;
         position: sticky;
         top: 88px;
+        transition: box-shadow 0.35s ease;
       }
+      .order-card:hover { box-shadow: var(--shadow-hover); }
       .order-card h2 {
-        font-size: 17px; font-weight: 900; margin: 0 0 4px;
+        font-size: 18px; font-weight: 900; letter-spacing: 0.03em; margin: 0 0 5px;
       }
-      .order-sub { font-size: 13px; color: var(--ink-3); margin: 0 0 18px; }
-      .field { margin-bottom: 16px; }
+      .order-sub { font-size: 13px; color: var(--ink-3); margin: 0 0 22px; }
+      .field { margin-bottom: 20px; }
       .field label {
         display: block;
         font-size: 13px; font-weight: 700;
@@ -435,7 +502,10 @@
       .field input[type="email"]::placeholder { color: var(--ink-3); font-weight: 400; }
       .field input[type="email"]:focus {
         border-color: var(--blue);
-        box-shadow: 0 0 0 4px rgba(56, 109, 232, 0.14);
+        box-shadow:
+          0 0 0 4px rgba(56, 109, 232, 0.13),
+          0 0 22px rgba(56, 109, 232, 0.20),
+          0 4px 14px rgba(56, 109, 232, 0.08);
       }
       .field .hint { font-size: 12.5px; color: var(--ink-3); margin-top: 7px; line-height: 1.55; }
       .field .err { font-size: 12px; color: var(--danger); margin-top: 6px; display: none; }
@@ -460,8 +530,8 @@
       .stepper button:hover { background: var(--line); }
       .stepper .qty {
         min-width: 40px; text-align: center;
-        font-weight: 700; font-size: 15px;
-        font-family: "Archivo", sans-serif;
+        font-weight: 800; font-size: 15px;
+        font-family: var(--font-num);
       }
       .pay-options { display: grid; gap: 10px; }
       .pay-option {
@@ -469,16 +539,23 @@
         width: 100%;
         text-align: left;
         border: 1.5px solid var(--line);
-        background: var(--surface);
+        background: linear-gradient(180deg, #ffffff, #fdfdfe);
         color: var(--ink);
         border-radius: 16px;
         padding: 12px 14px;
-        transition: border-color 0.15s, background 0.15s;
+        box-shadow: 0 1px 2px rgba(22, 24, 29, 0.03);
+        transition: border-color 0.2s, background 0.2s, box-shadow 0.25s, transform 0.2s;
       }
-      .pay-option:hover { border-color: var(--ink-3); }
+      .pay-option:hover {
+        border-color: var(--ink-3);
+        transform: translateY(-1px);
+        box-shadow: 0 6px 16px rgba(22, 24, 29, 0.07);
+      }
+      .pay-option:active { transform: translateY(0); }
       .pay-option.selected {
         border-color: var(--blue);
-        background: var(--blue-soft);
+        background: linear-gradient(180deg, #f2f6ff, var(--blue-soft));
+        box-shadow: 0 4px 14px rgba(56, 109, 232, 0.12);
       }
       .pay-icon {
         width: 34px; height: 34px; flex: none;
@@ -517,25 +594,44 @@
       }
       .total-row .t-label { font-size: 14px; color: var(--ink-2); }
       .total-row .t-value {
-        font-family: "Archivo", sans-serif;
-        font-size: 28px; font-weight: 800; color: var(--blue);
+        font-family: var(--font-num);
+        font-size: 30px; font-weight: 800; letter-spacing: -0.01em; color: var(--blue);
       }
-      .total-row .t-value small { font-size: 16px; }
+      .total-row .t-value small { font-size: 17px; margin-right: 2px; }
       .buy-btn {
         width: 100%;
         border: 0;
-        background: var(--blue);
+        background: linear-gradient(180deg, #4a7bf0 0%, var(--blue) 52%, var(--blue-deep) 100%);
         color: #fff;
         font-size: 16px; font-weight: 900;
-        letter-spacing: 0.08em;
-        padding: 15px;
+        letter-spacing: 0.1em;
+        padding: 16px;
         border-radius: 999px;
-        box-shadow: 0 10px 22px rgba(56, 109, 232, 0.28);
-        transition: background 0.15s, transform 0.1s;
+        box-shadow:
+          0 1px 2px rgba(43, 89, 201, 0.25),
+          0 6px 16px rgba(56, 109, 232, 0.30),
+          0 14px 30px rgba(56, 109, 232, 0.22),
+          inset 0 1px 0 rgba(255, 255, 255, 0.28);
+        transition: box-shadow 0.25s, transform 0.18s, filter 0.2s;
       }
-      .buy-btn:hover { background: var(--blue-deep); }
-      .buy-btn:active { transform: scale(0.99); }
-      .buy-btn:disabled { background: var(--ink-3); cursor: not-allowed; box-shadow: none; }
+      .buy-btn:hover {
+        transform: translateY(-2px);
+        filter: brightness(1.04);
+        box-shadow:
+          0 2px 4px rgba(43, 89, 201, 0.22),
+          0 10px 22px rgba(56, 109, 232, 0.34),
+          0 20px 40px rgba(56, 109, 232, 0.26),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      }
+      .buy-btn:active {
+        transform: translateY(0) scale(0.99);
+        filter: brightness(0.98);
+        box-shadow:
+          0 1px 2px rgba(43, 89, 201, 0.25),
+          0 4px 10px rgba(56, 109, 232, 0.26),
+          inset 0 2px 6px rgba(27, 62, 143, 0.25);
+      }
+      .buy-btn:disabled { background: var(--ink-3); cursor: not-allowed; box-shadow: none; transform: none; filter: none; }
       .assure {
         display: flex; justify-content: space-between;
         margin-top: 16px;
@@ -548,31 +644,34 @@
         display: flex;
         align-items: center;
         gap: 10px;
-        background: var(--blue-soft);
+        background: linear-gradient(180deg, #f0f5ff, var(--blue-soft));
         color: var(--blue-deep);
         font-size: 15px;
         font-weight: 700;
-        letter-spacing: 0.02em;
+        letter-spacing: 0.03em;
         line-height: 1.5;
         text-align: left;
         border: 1px solid rgba(56, 109, 232, 0.28);
         border-radius: 16px;
-        padding: 12px 15px;
+        padding: 13px 16px;
+        box-shadow: 0 2px 8px rgba(56, 109, 232, 0.07), inset 0 1px 0 rgba(255, 255, 255, 0.7);
       }
       .own-banner svg { flex: none; color: var(--blue); }
       .visual .own-banner { margin-bottom: 20px; }
 
       /* ---------- 使用教程 ---------- */
       .tutorial {
-        margin-top: 24px;
+        margin-top: 28px;
         background: var(--surface);
         border: 1px solid var(--line);
         border-radius: var(--radius);
         box-shadow: var(--shadow);
-        padding: 28px 30px 32px;
+        padding: 34px 34px 38px;
+        transition: box-shadow 0.35s ease;
       }
-      .tutorial-head h2 { font-size: 22px; font-weight: 900; margin: 0 0 4px; }
-      .tutorial-head p { margin: 0 0 20px; color: var(--ink-2); font-size: 14px; }
+      .tutorial:hover { box-shadow: var(--shadow-hover); }
+      .tutorial-head h2 { font-size: 23px; font-weight: 900; letter-spacing: 0.02em; margin: 0 0 6px; }
+      .tutorial-head p { margin: 0 0 24px; color: var(--ink-2); font-size: 14px; }
       .tutorial .own-banner { margin-bottom: 22px; }
       .tut-grid {
         display: grid;
@@ -582,11 +681,17 @@
       .tut-card {
         border: 1px solid var(--line);
         border-radius: 20px;
-        background: var(--surface-2);
-        padding: 20px;
+        background: linear-gradient(180deg, #fbfcfe, var(--surface-2));
+        padding: 22px;
         display: flex;
         flex-direction: column;
         gap: 10px;
+        box-shadow: 0 1px 2px rgba(22, 24, 29, 0.03), 0 6px 18px rgba(22, 24, 29, 0.04);
+        transition: box-shadow 0.3s ease, transform 0.25s ease;
+      }
+      .tut-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 2px 4px rgba(22, 24, 29, 0.04), 0 12px 28px rgba(22, 24, 29, 0.08);
       }
       .tut-card.wide { grid-column: 1 / -1; }
       .tut-chapter {
@@ -675,13 +780,26 @@
         max-width: 520px;
         max-height: 86vh;
         overflow-y: auto;
+        border: 1px solid rgba(22, 24, 29, 0.06);
+        border-bottom: 0;
         border-radius: 28px 28px 0 0;
         padding: 26px 26px 30px;
+        box-shadow:
+          0 -2px 6px rgba(22, 24, 29, 0.05),
+          0 -12px 32px rgba(22, 24, 29, 0.10),
+          0 -28px 64px rgba(22, 24, 29, 0.10);
         animation: rise 0.22s ease;
       }
       @media (min-width: 640px) {
         .modal-mask { align-items: center; padding: 20px; }
-        .modal { border-radius: 28px; }
+        .modal {
+          border-radius: 28px;
+          border-bottom: 1px solid rgba(22, 24, 29, 0.06);
+          box-shadow:
+            0 2px 6px rgba(22, 24, 29, 0.05),
+            0 12px 32px rgba(22, 24, 29, 0.10),
+            0 32px 72px rgba(22, 24, 29, 0.14);
+        }
       }
       @keyframes rise {
         from { transform: translateY(14px); opacity: 0; }
@@ -718,16 +836,35 @@
       }
       .order-summary .os-row span:first-child { color: var(--ink-3); flex: none; }
       .order-summary .os-row span:last-child { font-weight: 700; color: var(--ink); text-align: right; word-break: break-all; }
-      .order-summary .os-row.total span:last-child { color: var(--blue); font-family: "Archivo", sans-serif; font-size: 17px; }
+      .order-summary .os-row.total span:last-child { color: var(--blue); font-family: var(--font-num); font-weight: 800; font-size: 17px; }
       .modal-btn {
         width: 100%;
         border: 0; border-radius: 999px;
-        background: var(--ink); color: #fff;
+        background: linear-gradient(180deg, #2a2e37, var(--ink));
+        color: #fff;
         font-size: 15px; font-weight: 800;
+        letter-spacing: 0.04em;
         padding: 13px; margin-top: 8px;
+        box-shadow: 0 4px 12px rgba(22, 24, 29, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.14);
+        transition: transform 0.18s, box-shadow 0.25s, filter 0.2s;
       }
-      .modal-btn.accent { background: var(--blue); color: #fff; box-shadow: 0 8px 18px rgba(56, 109, 232, 0.26); }
-      .modal-btn.accent:hover { background: var(--blue-deep); }
+      .modal-btn:hover { transform: translateY(-1px); filter: brightness(1.06); }
+      .modal-btn:active { transform: translateY(0) scale(0.99); }
+      .modal-btn.accent {
+        background: linear-gradient(180deg, #4a7bf0 0%, var(--blue) 52%, var(--blue-deep) 100%);
+        color: #fff;
+        box-shadow:
+          0 1px 2px rgba(43, 89, 201, 0.22),
+          0 6px 16px rgba(56, 109, 232, 0.30),
+          inset 0 1px 0 rgba(255, 255, 255, 0.28);
+      }
+      .modal-btn.accent:hover {
+        filter: brightness(1.05);
+        box-shadow:
+          0 2px 4px rgba(43, 89, 201, 0.2),
+          0 10px 24px rgba(56, 109, 232, 0.34),
+          inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      }
       .modal-btn.secondary {
         background: var(--surface-2);
         color: var(--ink-2);
@@ -810,7 +947,7 @@
       }
       .pay-orderno-value {
         display: block;
-        font-family: "Archivo", sans-serif;
+        font-family: var(--font-num);
         font-size: 28px;
         font-weight: 800;
         letter-spacing: 0.05em;
@@ -820,14 +957,16 @@
       .copy-orderno-btn {
         flex: none;
         border: 0;
-        background: #fff;
+        background: linear-gradient(180deg, #ffffff, #eef2fb);
         color: var(--blue);
         font-size: 15px;
         font-weight: 900;
         padding: 13px 18px;
         border-radius: 999px;
-        transition: transform 0.1s;
+        box-shadow: 0 3px 10px rgba(18, 30, 66, 0.25), inset 0 1px 0 #fff;
+        transition: transform 0.15s, box-shadow 0.2s;
       }
+      .copy-orderno-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(18, 30, 66, 0.28), inset 0 1px 0 #fff; }
       .copy-orderno-btn:active { transform: scale(0.96); }
       .pay-after {
         font-size: 13px; color: var(--ink-2);
@@ -864,14 +1003,16 @@
       .copy-btn {
         margin-left: auto;
         border: 0;
-        background: var(--blue);
+        background: linear-gradient(180deg, #4a7bf0, var(--blue-deep));
         color: #fff;
         font-size: 13px; font-weight: 700;
         padding: 8px 18px;
         border-radius: 999px;
-        transition: background 0.15s;
+        box-shadow: 0 3px 10px rgba(56, 109, 232, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.25);
+        transition: transform 0.18s, box-shadow 0.25s, filter 0.2s;
       }
-      .copy-btn:hover { background: var(--blue-deep); }
+      .copy-btn:hover { transform: translateY(-1px); filter: brightness(1.05); box-shadow: 0 6px 16px rgba(56, 109, 232, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.25); }
+      .copy-btn:active { transform: translateY(0) scale(0.97); }
       .empty-orders {
         text-align: center; padding: 26px 0 10px;
         color: var(--ink-3); font-size: 14px;
@@ -917,7 +1058,11 @@
         .topbar-in { padding: 8px 14px; }
         .brand-name { font-size: 17px; }
         .orders-btn { padding: 8px 13px; font-size: 13px; }
-        .wrap { padding: 18px 14px 44px; }
+        .wrap { padding: 22px 14px 52px; }
+        .layout { gap: 20px; margin-top: 20px; }
+        .product-body { padding: 24px 20px 28px; }
+        .order-card { padding: 24px 20px 26px; }
+        .tutorial { padding: 26px 20px 30px; }
         .segmented { grid-template-columns: repeat(3, minmax(0, 1fr)); border-radius: 26px; }
         .seg-thumb { border-radius: 21px; }
         .tab { min-width: 0; padding-left: 2px; padding-right: 2px; }
