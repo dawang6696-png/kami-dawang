@@ -1613,6 +1613,65 @@ badge.textContent = state.orders.length;
 badge.classList.toggle("show", state.orders.length > 0);
 }
 
+/* 订单云端上报：自动重试 3 次，全部失败则存入待补报队列，页面每次打开时自动补报 */
+var REPORTS_KEY = "kamiDawangPendingReports";
+var REPORT_URL = "https://silent-boat-8406.dawang6696.workers.dev/orders";
+function loadReportQueue() {
+try {
+var raw = localStorage.getItem(REPORTS_KEY);
+var arr = raw ? JSON.parse(raw) : [];
+return Array.isArray(arr) ? arr.filter(function (p) { return p && p.orderId;}) : [];
+} catch (e) { return []; }
+}
+function saveReportQueue(q) {
+try { localStorage.setItem(REPORTS_KEY, JSON.stringify(q));} catch (e) { /* 存储不可用时放弃入队 */}
+}
+function enqueueReport(payload) {
+var q = loadReportQueue();
+var exists = q.some(function (p) { return p.orderId === payload.orderId;});
+if (!exists) {
+q.push(payload);
+saveReportQueue(q);
+}
+}
+function postOrderOnce(payload) {
+return fetch(REPORT_URL, {
+method: "POST",
+headers: { "Content-Type": "application/json"},
+body: JSON.stringify(payload),
+keepalive: true
+}).then(function (res) { return !!(res && res.ok);}, function () { return false;});
+}
+function sendWithRetry(payload, attemptsLeft, delay) {
+return postOrderOnce(payload).then(function (ok) {
+if (ok || attemptsLeft <= 1) return ok;
+return new Promise(function (resolve) { setTimeout(resolve, delay);}).then(function () {
+return sendWithRetry(payload, attemptsLeft - 1, delay * 2);
+});
+});
+}
+function reportOrder(payload) {
+sendWithRetry(payload, 3, 1500).then(function (ok) {
+if (!ok) enqueueReport(payload);
+});
+}
+/* 页面打开时补报：逐单尝试，成功的从队列移除，仍失败的留到下次打开再报 */
+function flushReportQueue() {
+var q = loadReportQueue();
+if (!q.length) return;
+var chain = Promise.resolve();
+q.forEach(function (payload) {
+chain = chain.then(function () {
+return sendWithRetry(payload, 3, 1500).then(function (ok) {
+if (ok) {
+var rest = loadReportQueue().filter(function (p) { return p.orderId !== payload.orderId;});
+saveReportQueue(rest);
+}
+});
+});
+});
+}
+
 var $ = function (id) { return document.getElementById(id);};
 var checkSvg = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#386de8" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5l5 5L20 6.5"/></svg>';
 
@@ -1786,21 +1845,17 @@ status: "待付款"
 state.orders.push(order);
 state.pendingOrder = order;
 saveOrders();
-/* 订单上报到云端（后台同步用），失败静默，绝不影响下单流程 */
+/* 订单上报到云端（后台同步用）：内部自动重试 3 次，仍失败则入待补报队列，下次打开页面时补报；全程不阻塞下单流程 */
 try {
-fetch("https://silent-boat-8406.dawang6696.workers.dev/orders", {
-method: "POST",
-headers: { "Content-Type": "application/json"},
-body: JSON.stringify({
+reportOrder({
 orderId: order.no,
 product: order.name,
 quantity: order.qty,
 amount: order.total,
 payMethod: PAY_METHODS[order.pay].label,
 email: order.email
-})
-}).catch(function () {});
-} catch (e) { /* 上报失败不影响下单 */}
+});
+} catch (e) { /* 上报异常不影响下单 */}
 var badge = $("ordersCount");
 badge.textContent = state.orders.length;
 badge.classList.add("show");
@@ -1909,6 +1964,7 @@ $("emailField").classList.remove("invalid");
 });
 
 loadOrders();
+flushReportQueue();
 renderOrdersCount();
 renderProduct();
 moveThumb();
